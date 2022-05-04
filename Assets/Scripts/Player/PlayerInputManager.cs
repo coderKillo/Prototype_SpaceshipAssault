@@ -18,19 +18,49 @@ public class PlayerInputManager : MonoBehaviour
     [SerializeField] private float controlPitchFactor = 25.0f;
     [SerializeField] private float positionYawFactor = 5.0f;
     [SerializeField] private float positionPitchFactor = 2.0f;
-
     [SerializeField] private float rotationSpeed = 2.0f;
 
+    [SerializeField] private GameObject model;
+
+    [Header("Shooting")]
+    [SerializeField] private GameObject[] lasers;
+
     Vector2 m_input_movement;
+    bool m_input_fire;
 
     void Start()
     {
+        ActivateLasers(false);
     }
 
     void Update()
     {
         MovePlayer();
         RotatePlayer();
+
+        FireLaser();
+    }
+
+    private void FireLaser()
+    {
+        if (m_input_fire)
+        {
+            ActivateLasers(true);
+        }
+        else
+        {
+            ActivateLasers(false);
+        }
+    }
+
+    private void ActivateLasers(bool active)
+    {
+        foreach (var laser in lasers)
+        {
+            var particle_system = laser.GetComponent<ParticleSystem>();
+            var emission = particle_system.emission;
+            emission.enabled = active;
+        }
     }
 
     private void MovePlayer()
@@ -48,20 +78,29 @@ public class PlayerInputManager : MonoBehaviour
 
     private void RotatePlayer()
     {
-        var pitchAngle = m_input_movement.y * -controlRollFactor;
+        var pitchAngle = m_input_movement.y * -controlPitchFactor;
         pitchAngle += transform.localPosition.normalized.y * -positionPitchFactor;
         var jawAngle = transform.localPosition.normalized.x * -positionYawFactor;
-        var rollAngle = m_input_movement.x * -controlPitchFactor;
+        var rollAngle = m_input_movement.x * -controlRollFactor;
 
-        transform.localRotation = Quaternion.Euler(
-            pitchAngle,
-            jawAngle,
-            rollAngle
+        model.transform.localRotation = Quaternion.Lerp(
+            model.transform.localRotation,
+            Quaternion.Euler(
+                pitchAngle,
+                jawAngle,
+                rollAngle
+            ),
+            rotationSpeed * Time.deltaTime
         );
     }
 
     private void OnMove(InputValue value)
     {
         m_input_movement = value.Get<Vector2>();
+    }
+
+    private void OnFire(InputValue value)
+    {
+        m_input_fire = value.isPressed;
     }
 }
