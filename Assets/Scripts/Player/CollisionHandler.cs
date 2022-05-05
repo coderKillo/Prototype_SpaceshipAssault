@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class CollisionHandler : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] private ParticleSystem explosionVFX;
+
     void Start()
     {
 
@@ -18,6 +19,7 @@ public class CollisionHandler : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        explosionVFX.Play();
         GameManager.instance.PlayerHit();
     }
 }

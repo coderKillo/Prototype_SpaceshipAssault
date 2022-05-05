@@ -1,13 +1,16 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Playables;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Player Settings")]
     [SerializeField] private int lifePoints = 1;
+    [SerializeField] private float disablePlayerControlTime = 5.3f;
+
+    [Header("Timeline Settings")]
+    [SerializeField] private PlayableDirector mainTimeline;
 
     static private GameManager _instance;
     static public GameManager instance { get { return _instance; } }
@@ -22,7 +25,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-
+        Invoke("EnableControls", disablePlayerControlTime);
     }
 
     // Update is called once per frame
@@ -36,9 +39,37 @@ public class GameManager : MonoBehaviour
         lifePoints--;
         if (lifePoints <= 0)
         {
-            RestartLevel();
+            PlayerDied();
         }
     }
+
+    public void ObstacleDestroyed(int points)
+    {
+        Scoreboard.instance.IncreaseScore(points);
+    }
+
+    private void EnableControls()
+    {
+        var player = GameObject.FindGameObjectWithTag("Player");
+        if (!player) { return; }
+
+        var controls = player.GetComponent<PlayerInput>();
+        if (!controls) { return; }
+
+        controls.ActivateInput();
+    }
+
+    private void PlayerDied()
+    {
+        var player = GameObject.FindGameObjectWithTag("Player");
+        player.SetActive(false);
+
+        mainTimeline.time = 0;
+        mainTimeline.Stop();
+
+        Invoke("RestartLevel", 1);
+    }
+
 
     private void RestartLevel()
     {

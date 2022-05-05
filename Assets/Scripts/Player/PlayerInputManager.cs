@@ -31,6 +31,7 @@ public class PlayerInputManager : MonoBehaviour
     void Start()
     {
         ActivateLasers(false);
+        GetComponent<PlayerInput>().DeactivateInput();
     }
 
     void Update()
