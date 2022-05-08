@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     static private GameManager _instance;
     static public GameManager instance { get { return _instance; } }
 
+    private bool m_isPlayerMoving = false;
+
     void Awake()
     {
         if (_instance == null)
@@ -25,6 +27,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        m_isPlayerMoving = false;
+
         Invoke("EnableControls", disablePlayerControlTime);
     }
 
@@ -48,8 +52,15 @@ public class GameManager : MonoBehaviour
         Scoreboard.instance.IncreaseScore(points);
     }
 
+    public bool isPlayerMoving()
+    {
+        return m_isPlayerMoving;
+    }
+
     private void EnableControls()
     {
+        m_isPlayerMoving = true;
+
         var player = GameObject.FindGameObjectWithTag("Player");
         if (!player) { return; }
 

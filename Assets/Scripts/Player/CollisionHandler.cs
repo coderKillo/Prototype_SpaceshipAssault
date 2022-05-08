@@ -19,6 +19,7 @@ public class CollisionHandler : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        explosionVFX.gameObject.transform.position = this.transform.position;
         explosionVFX.Play();
         GameManager.instance.PlayerHit();
     }
