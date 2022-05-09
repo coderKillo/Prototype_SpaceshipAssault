@@ -75,6 +75,8 @@ public class GameManager : MonoBehaviour
         var player = GameObject.FindGameObjectWithTag("Player");
         player.SetActive(false);
 
+        m_isPlayerMoving = false;
+
         mainTimeline.time = 0;
         mainTimeline.Stop();
 
